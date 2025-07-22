@@ -1,0 +1,359 @@
+/* ===== RESET AND BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: black !important;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* ===== LAYOUT ===== */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ===== HEADER ===== */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    color: white;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+main {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-bottom: 30px;
+}
+
+/* ===== UPLOAD SECTION ===== */
+.upload-section {
+    margin-bottom: 30px;
+}
+
+.upload-section h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+.upload-boxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.upload-area {
+    border: 3px dashed #667eea;
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #f8f9ff;
+    position: relative;
+}
+
+.upload-area:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+}
+
+.upload-area.dragover {
+    border-color: #4CAF50;
+    background: #e8f5e8;
+    transform: translateY(-5px) scale(1.02);
+}
+
+/* Excel Upload Styling */
+.excel-upload {
+    border-color: #2E7D32;
+    background: #f1f8e9;
+}
+
+.excel-upload:hover {
+    border-color: #1B5E20;
+    background: #e8f5e8;
+    box-shadow: 0 10px 25px rgba(46, 125, 50, 0.2);
+}
+
+.excel-upload.dragover {
+    border-color: #4CAF50;
+    background: #c8e6c9;
+}
+
+/* WinDAQ Upload Styling */
+.windaq-upload {
+    border-color: #F57C00;
+    background: #fff8e1;
+}
+
+.windaq-upload:hover {
+    border-color: #E65100;
+    background: #ffecb3;
+    box-shadow: 0 10px 25px rgba(245, 124, 0, 0.2);
+}
+
+.windaq-upload.dragover {
+    border-color: #FF9800;
+    background: #ffe0b2;
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
+.upload-icon-img {
+    max-width: 60px;
+    max-height: 60px;
+    object-fit: contain;
+}
+
+.excel-icon-fallback {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.excel-icon-square {
+    width: 50px;
+    height: 50px;
+    background: #217346;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.upload-area h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.upload-area p {
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.upload-area small {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+/* ===== BUTTONS ===== */
+.browse-btn {
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-weight: 600;
+}
+
+.browse-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Excel Button */
+.excel-btn {
+    background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%);
+}
+
+.excel-btn:hover {
+    box-shadow: 0 5px 15px rgba(46, 125, 50, 0.4);
+    background: linear-gradient(135deg, #1B5E20 0%, #388E3C 100%);
+}
+
+/* WinDAQ Button */
+.windaq-btn {
+    background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
+}
+
+.windaq-btn:hover {
+    box-shadow: 0 5px 15px rgba(245, 124, 0, 0.4);
+    background: linear-gradient(135deg, #E65100 0%, #F57C00 100%);
+}
+
+/* Process Button */
+.process-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.process-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.process-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+.process-btn:active {
+    transform: translateY(0);
+}
+
+
+
+.retry-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+    background: #da190b;
+    transform: translateY(-2px);
+}
+
+/* ===== FORM SECTIONS ===== */
+.filename-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9ff;
+    border-radius: 10px;
+}
+
+.filename-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+}
+
+.filename-section input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.filename-section input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.filename-section small {
+    color: #666;
+    margin-top: 5px;
+    display: block;
+}
+
+/* ===== PROGRESS SECTION ===== */
+.progress-section {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+
+
+/* ===== ERROR SECTION ===== */
+.error-section {
+    text-align: center;
+    padding: 30px;
+    background: #ffebee;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.error-section h3 {
+    color: #f44336;
+    margin-bottom: 15px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    .upload-boxes {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .upload-area {
+        padding: 30px 15px;
+    }
+
+    .upload-section h2 {
+        font-size: 1.5rem;
+    }
+}
