@@ -116,8 +116,16 @@ def analyze_peak_currents(input_file):
 
         if file_ext in ['.wdh', '.wdq']:
             # Handle WinDAQ files
-            print("Detected WinDAQ file format")
-            df_raw = convert_windaq_to_dataframe(input_file)
+            print(f"Detected WinDAQ file format: {file_ext}")
+            try:
+                df_raw = convert_windaq_to_dataframe(input_file)
+            except Exception as windaq_error:
+                print(f"WinDAQ conversion failed: {windaq_error}")
+                # Try to provide more helpful error message
+                if "not a valid WinDAQ file" in str(windaq_error).lower():
+                    raise Exception(f"The file '{Path(input_file).name}' does not appear to be a valid WinDAQ file. Please ensure it's a properly formatted .wdh or .wdq file from WinDAQ software.")
+                else:
+                    raise Exception(f"Failed to read WinDAQ file: {windaq_error}")
         else:
             # Handle Excel files
             print("Detected Excel file format")
@@ -230,10 +238,18 @@ def copy_raw_data(input_file, output_file):
         # Check file extension to determine how to read it
         file_ext = Path(input_file).suffix.lower()
 
-        if file_ext in ['.wdh']:
+        if file_ext in ['.wdh', '.wdq']:
             # Handle WinDAQ files
-            print("Detected WinDAQ file format")
-            df_raw = convert_windaq_to_dataframe(input_file)
+            print(f"Detected WinDAQ file format: {file_ext}")
+            try:
+                df_raw = convert_windaq_to_dataframe(input_file)
+            except Exception as windaq_error:
+                print(f"WinDAQ conversion failed: {windaq_error}")
+                # Try to provide more helpful error message
+                if "not a valid WinDAQ file" in str(windaq_error).lower():
+                    raise Exception(f"The file '{Path(input_file).name}' does not appear to be a valid WinDAQ file. Please ensure it's a properly formatted .wdh or .wdq file from WinDAQ software.")
+                else:
+                    raise Exception(f"Failed to read WinDAQ file: {windaq_error}")
         else:
             # Handle Excel files
             print("Detected Excel file format")
