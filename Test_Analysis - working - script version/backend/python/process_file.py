@@ -127,9 +127,8 @@ def analyze_peak_currents(input_file):
                 else:
                     raise Exception(f"Failed to read WinDAQ file: {windaq_error}")
         else:
-            # Handle Excel files
-            print("Detected Excel file format")
-            df_raw = pd.read_excel(input_file)
+            # Unsupported file format
+            raise Exception(f"Unsupported file format: {file_ext}. Please upload a WinDAQ (.wdh or .wdq) file.")
 
         print(f"Successfully read {len(df_raw)} rows of data")
         print(f"Original columns: {df_raw.columns.tolist()}")
@@ -251,9 +250,8 @@ def copy_raw_data(input_file, output_file):
                 else:
                     raise Exception(f"Failed to read WinDAQ file: {windaq_error}")
         else:
-            # Handle Excel files
-            print("Detected Excel file format")
-            df_raw = pd.read_excel(input_file)
+            # Unsupported file format
+            raise Exception(f"Unsupported file format: {file_ext}. Please upload a WinDAQ (.wdh or .wdq) file.")
         print(f"Successfully read {len(df_raw)} rows of data")
         print(f"Original columns: {df_raw.columns.tolist()}")
         

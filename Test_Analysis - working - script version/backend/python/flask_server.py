@@ -72,25 +72,18 @@ HTML_TEMPLATE = """
     <div class="container">
         <header>
             <h1>Peak Current Test Analysis</h1>
-            <p>Upload your electrical data files to analyze peak currents in pulses</p>
+            <p>Upload your WinDAQ data files to analyze peak currents in pulses</p>
         </header>
         <main>
             <form id="uploadForm" enctype="multipart/form-data">
                 <div class="upload-section">
-                    <!-- WinDAQ Files Upload - Primary -->
+                    <!-- WinDAQ Files Upload - Only Option -->
                     <div class="upload-area" id="windaqUploadArea" style="margin-bottom: 30px;">
                         <div class="upload-icon"><img src="/static/DATAQ_Logo.jpg" alt="DataQ Logo" style="max-width: 80px; max-height: 60px; object-fit: contain;"></div>
                         <h3>Upload WinDAQ File</h3>
                         <p>Drop your .wdh or .wdq file here or click to browse</p>
                         <input type="file" id="windaqFileInput" name="file" accept=".wdh,.wdq" hidden>
                         <button type="button" class="browse-btn" onclick="document.getElementById('windaqFileInput').click()">Browse WinDAQ Files</button>
-                    </div>
-
-                    <!-- Excel Files Upload - Secondary -->
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <p style="color: #666; margin-bottom: 10px;">Or upload Excel files:</p>
-                        <input type="file" id="excelFileInput" name="file" accept=".xlsx,.xls" hidden>
-                        <button type="button" class="browse-btn" style="padding: 8px 20px; font-size: 0.9rem;" onclick="document.getElementById('excelFileInput').click()">Browse Excel Files</button>
                     </div>
                 </div>
                 <div class="filename-section" id="filenameSection">
@@ -140,7 +133,6 @@ HTML_TEMPLATE = """
         let selectedFile = null;
         let analysisData = null;
         const windaqUploadArea = document.getElementById('windaqUploadArea');
-        const excelFileInput = document.getElementById('excelFileInput');
         const windaqFileInput = document.getElementById('windaqFileInput');
         const filenameSection = document.getElementById('filenameSection');
         const uploadForm = document.getElementById('uploadForm');
@@ -157,33 +149,23 @@ HTML_TEMPLATE = """
         // WinDAQ file upload events (drag & drop)
         windaqUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); windaqUploadArea.classList.add('dragover'); });
         windaqUploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); windaqUploadArea.classList.remove('dragover'); });
-        windaqUploadArea.addEventListener('drop', (e) => { e.preventDefault(); windaqUploadArea.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0], 'windaq'); });
-        windaqFileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0], 'windaq'); });
+        windaqUploadArea.addEventListener('drop', (e) => { e.preventDefault(); windaqUploadArea.classList.remove('dragover'); if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]); });
+        windaqFileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0]); });
 
-        // Excel file upload events (button only)
-        excelFileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(e.target.files[0], 'excel'); });
+        function handleFile(file) {
+            console.log('File selected:', file.name, 'Type:', file.type, 'Size:', file.size);
+            const lowerFileName = file.name.toLowerCase();
 
-        function handleFile(file, fileType) {
-            console.log('File selected:', file.name, 'Type:', file.type, 'Size:', file.size, 'Expected:', fileType);
-            const fileName = file.name.toLowerCase();
-
-            // Validate based on expected file type (case-insensitive)
-            const lowerFileName = fileName.toLowerCase();
-            if (fileType === 'excel') {
-                if (!lowerFileName.endsWith('.xlsx') && !lowerFileName.endsWith('.xls')) {
-                    showError('Please select a valid Excel file (.xlsx or .xls)');
-                    return;
-                }
-            } else if (fileType === 'windaq') {
-                if (!lowerFileName.endsWith('.wdh') && !lowerFileName.endsWith('.wdq')) {
-                    showError('Please select a valid WinDAQ file (.wdh or .wdq)');
-                    return;
-                }
+            // Validate WinDAQ file type (case-insensitive)
+            if (!lowerFileName.endsWith('.wdh') && !lowerFileName.endsWith('.wdq')) {
+                showError('Please select a valid WinDAQ file (.wdh or .wdq)');
+                return;
             }
 
             console.log('File accepted:', file.name);
             if (file.size > 50 * 1024 * 1024) {
-                showError('File too large. Maximum size is 50MB.'); return;
+                showError('File too large. Maximum size is 50MB.');
+                return;
             }
             selectedFile = file;
             filenameSection.style.display = 'block';
@@ -302,7 +284,6 @@ HTML_TEMPLATE = """
             progressSection.style.display = 'none';
             resultsSection.style.display = 'none';
             errorSection.style.display = 'none';
-            excelFileInput.value = '';
             windaqFileInput.value = '';
             selectedFile = null;
             analysisData = null;
@@ -351,9 +332,8 @@ def analyze_peaks():
 
         # Validate file type (case-insensitive)
         filename_lower = file.filename.lower()
-        if not (filename_lower.endswith('.xlsx') or filename_lower.endswith('.xls') or
-                filename_lower.endswith('.wdh') or filename_lower.endswith('.wdq')):
-            return jsonify({'error': f'Invalid file type: {file.filename}. Please upload an Excel (.xlsx, .xls) or WinDAQ (.wdh, .wdq) file.'}), 400
+        if not (filename_lower.endswith('.wdh') or filename_lower.endswith('.wdq')):
+            return jsonify({'error': f'Invalid file type: {file.filename}. Please upload a WinDAQ (.wdh, .wdq) file.'}), 400
 
         # Create temporary directory
         temp_dir = tempfile.mkdtemp()
@@ -405,9 +385,8 @@ def download_excel():
 
         # Validate file type (case-insensitive)
         filename_lower = file.filename.lower()
-        if not (filename_lower.endswith('.xlsx') or filename_lower.endswith('.xls') or
-                filename_lower.endswith('.wdh') or filename_lower.endswith('.wdq')):
-            return jsonify({'error': f'Invalid file type: {file.filename}. Please upload an Excel (.xlsx, .xls) or WinDAQ (.wdh, .wdq) file.'}), 400
+        if not (filename_lower.endswith('.wdh') or filename_lower.endswith('.wdq')):
+            return jsonify({'error': f'Invalid file type: {file.filename}. Please upload a WinDAQ (.wdh, .wdq) file.'}), 400
 
         # Create temporary directory
         temp_dir = tempfile.mkdtemp()

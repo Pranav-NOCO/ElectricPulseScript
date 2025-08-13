@@ -3,47 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electrical Pulse Analysis Tool</title>
+    <title>Peak Current Test Analysis</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Electrical Pulse Analysis Tool</h1>
-            <p>Upload your electrical data Excel file to analyze voltage and current pulses</p>
+            <h1>Peak Current Test Analysis</h1>
+            <p>Upload your WinDAQ data files to analyze peak currents in pulses</p>
         </header>
 
         <main>
             <div class="upload-section">
-                <h2>Choose Your File Type</h2>
+                <h2>Upload WinDAQ File</h2>
                 <div class="upload-boxes">
-                    <!-- Excel Upload Box -->
-                    <div class="upload-area excel-upload" id="excelUploadArea" data-file-type="excel">
-                        <div class="upload-icon">
-                            <img src="assets/excel-icon.svg" alt="Excel" class="upload-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                            <div class="excel-icon-fallback" style="display: none;">
-                                <div class="excel-icon-square">XL</div>
-                            </div>
-                        </div>
-                        <h3>Excel Files</h3>
-                        <p>Drop your Excel file here or click to browse</p>
-                        <small>Supported: .xlsx, .xls</small>
-                        <input type="file" id="excelFileInput" accept=".xlsx,.xls" hidden>
-                        <button class="browse-btn excel-btn">
-                            Browse Excel Files
-                        </button>
-                    </div>
-
-                    <!-- WinDAQ Upload Box -->
+                    <!-- WinDAQ Upload Box - Only Option -->
                     <div class="upload-area windaq-upload" id="windaqUploadArea" data-file-type="windaq">
                         <div class="upload-icon">
                             <img src="assets/DATAQ_Logo.jpg" alt="WinDAQ" class="upload-icon-img">
                         </div>
                         <h3>WinDAQ Files</h3>
                         <p>Drop your WinDAQ file here or click to browse</p>
-                        <small>Supported: .wdh</small>
-                        <input type="file" id="windaqFileInput" accept=".wdh" hidden>
+                        <small>Supported: .wdh, .wdq</small>
+                        <input type="file" id="windaqFileInput" accept=".wdh,.wdq" hidden>
                         <button class="browse-btn windaq-btn">
                             Browse WinDAQ Files
                         </button>
