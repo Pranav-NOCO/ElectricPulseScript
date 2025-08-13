@@ -103,6 +103,126 @@ def convert_windaq_to_dataframe(input_file):
 
     return df
 
+def analyze_peak_currents(input_file):
+    """
+    Analyze peak currents and return data for frontend display
+    Returns a dictionary with peak current data and raw data
+    """
+    print(f"Analyzing peak currents from {input_file}...")
+
+    try:
+        # Check file extension to determine how to read it
+        file_ext = Path(input_file).suffix.lower()
+
+        if file_ext in ['.wdh', '.wdq']:
+            # Handle WinDAQ files
+            print("Detected WinDAQ file format")
+            df_raw = convert_windaq_to_dataframe(input_file)
+        else:
+            # Handle Excel files
+            print("Detected Excel file format")
+            df_raw = pd.read_excel(input_file)
+
+        print(f"Successfully read {len(df_raw)} rows of data")
+        print(f"Original columns: {df_raw.columns.tolist()}")
+
+        # Remove the "Chn 1 Events" column if it exists
+        if 'Chn 1 Events' in df_raw.columns:
+            df_raw = df_raw.drop('Chn 1 Events', axis=1)
+            print("Removed 'Chn 1 Events' column")
+
+        # Detect pulses and extract peak currents
+        current_col = 'Amp '  # This will become "Current [A]"
+
+        # Pulse detection parameters
+        baseline_threshold = 10  # Current values below this are considered baseline
+        pulse_start_threshold = 50  # Minimum current jump to start a pulse
+        pulse_end_threshold = 20   # Current must drop below this to end a pulse
+
+        print("Detecting pulses dynamically...")
+        print(f"Baseline threshold: {baseline_threshold}A, Pulse start: {pulse_start_threshold}A, Pulse end: {pulse_end_threshold}A")
+
+        # First pass: detect all pulses
+        pulse_ranges = {}  # Store start/end rows for each pulse
+        current_pulse = 0
+        in_pulse = False
+
+        for i in range(len(df_raw)):
+            current_value = df_raw.iloc[i][current_col]
+
+            if i > 0:
+                prev_value = df_raw.iloc[i-1][current_col]
+
+                # Check for pulse start - significant jump in current from baseline
+                if not in_pulse and prev_value < baseline_threshold and current_value > pulse_start_threshold:
+                    current_pulse += 1
+                    in_pulse = True
+                    pulse_ranges[current_pulse] = {'start': i}
+                    print(f"Pulse {current_pulse} started at row {i}: {prev_value:.2f}A -> {current_value:.2f}A (jump: {current_value - prev_value:.2f}A)")
+
+                # Check for pulse end - current drops back below threshold
+                elif in_pulse and current_value < pulse_end_threshold:
+                    pulse_ranges[current_pulse]['end'] = i
+                    in_pulse = False
+                    print(f"Pulse {current_pulse} ended at row {i}: {prev_value:.2f}A -> {current_value:.2f}A")
+
+        # If we're still in a pulse at the end, close it
+        if in_pulse:
+            pulse_ranges[current_pulse]['end'] = len(df_raw) - 1
+            print(f"Pulse {current_pulse} ended at end of data (row {len(df_raw) - 1})")
+
+        print(f"Total pulses detected: {len(pulse_ranges)}")
+
+        # Calculate peak currents for each pulse
+        peak_currents = []
+        for pulse_num in sorted(pulse_ranges.keys()):
+            start_idx = pulse_ranges[pulse_num]['start']
+            end_idx = pulse_ranges[pulse_num]['end']
+
+            # Get pulse data
+            pulse_data = df_raw.iloc[start_idx:end_idx + 1][current_col]
+            peak_current = pulse_data.max()
+            peak_time = df_raw.iloc[start_idx:end_idx + 1]['Relative Time'].iloc[pulse_data.idxmax() - start_idx]
+
+            peak_currents.append({
+                'pulse_number': pulse_num,
+                'peak_current': round(peak_current, 2),
+                'peak_time': round(peak_time, 3),
+                'start_time': round(df_raw.iloc[start_idx]['Relative Time'], 3),
+                'end_time': round(df_raw.iloc[end_idx]['Relative Time'], 3),
+                'duration': round(df_raw.iloc[end_idx]['Relative Time'] - df_raw.iloc[start_idx]['Relative Time'], 3)
+            })
+
+            print(f"Pulse {pulse_num}: Peak = {peak_current:.2f}A at {peak_time:.3f}s")
+
+        # Prepare raw data for frontend
+        raw_data = {
+            'time': df_raw['Relative Time'].tolist(),
+            'current': df_raw[current_col].tolist(),
+            'voltage': df_raw['Volt '].tolist() if 'Volt ' in df_raw.columns else []
+        }
+
+        return {
+            'success': True,
+            'peak_currents': peak_currents,
+            'raw_data': raw_data,
+            'total_pulses': len(pulse_ranges),
+            'file_info': {
+                'total_samples': len(df_raw),
+                'duration': round(df_raw['Relative Time'].max(), 3),
+                'sampling_rate': round(len(df_raw) / df_raw['Relative Time'].max(), 1)
+            }
+        }
+
+    except Exception as e:
+        print(f"Error analyzing file: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            'success': False,
+            'error': str(e)
+        }
+
 def copy_raw_data(input_file, output_file):
     print(f"Reading data from {input_file}...")
 
