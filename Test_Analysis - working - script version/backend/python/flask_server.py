@@ -167,14 +167,15 @@ HTML_TEMPLATE = """
             console.log('File selected:', file.name, 'Type:', file.type, 'Size:', file.size, 'Expected:', fileType);
             const fileName = file.name.toLowerCase();
 
-            // Validate based on expected file type
+            // Validate based on expected file type (case-insensitive)
+            const lowerFileName = fileName.toLowerCase();
             if (fileType === 'excel') {
-                if (!fileName.endsWith('.xlsx') && !fileName.endsWith('.xls')) {
+                if (!lowerFileName.endsWith('.xlsx') && !lowerFileName.endsWith('.xls')) {
                     showError('Please select a valid Excel file (.xlsx or .xls)');
                     return;
                 }
             } else if (fileType === 'windaq') {
-                if (!fileName.endsWith('.wdh') && !fileName.endsWith('.wdq')) {
+                if (!lowerFileName.endsWith('.wdh') && !lowerFileName.endsWith('.wdq')) {
                     showError('Please select a valid WinDAQ file (.wdh or .wdq)');
                     return;
                 }
